@@ -2,6 +2,7 @@ from os import mkdir
 from os.path import join
 import numpy as np
 import matplotlib as mpl
+from feature import Area, Way, Name, Node
 from projection import mercator, deg2num, num2deg
 
 class Map():
@@ -34,7 +35,7 @@ class Map():
         max_lat = -85.0511
         min_lon = 180.0
         max_lon = 180.0
-        for lon, lat in args:
+        for lat, lon in args:
             min_lat = min(min_lat, lat)
             max_lat = max(max_lat, lat)
             min_lon = min(min_lon, lon)
@@ -45,30 +46,36 @@ class Map():
         bottom, right = num2deg(max_x+1, max_y+1, zoom)
         self.bound_by_box(self, bottom, top, left, right)
 
+    def get_bounds(self, padding=0):
+        bounds = np.copy(self.bounds)
+        bounds[:,0] -= padding
+        bounds[:,1] += padding
+        return bounds
+
     def projection(self, lat, lon):
         return mercator(lat, lon)
 
-    def add_area(self, boundary, style):
+    def add_area(self, boundary, style, check_bounds=True):
         area = Area(np.array(self.projection(boundary[0], boundary[1])), style)
-        if area.is_inbounds(self.bounds):
+        if check_bounds and area.is_inbounds(self.bounds):
             self.areas.append(area)
 
-    def add_way(self, vertices, style):
+    def add_way(self, vertices, style, check_bounds=True):
         way = Way(np.array(self.projection(vertices[0], vertices[1])), style)
-        if way.is_inbounds(self.bounds):
+        if check_bounds and way.is_inbounds(self.bounds):
             self.ways.append(way)
 
-    def add_name(self, label, location, style):
+    def add_name(self, label, location, style, check_bounds=True):
         name = Name(label, np.array(self.projection(location[0], location[1])), style)
-        if name.is_inbounds(self.bounds):
+        if check_bounds and name.is_inbounds(self.bounds):
             self.names.append(name)
 
-    def add_node(self, location, style):
+    def add_node(self, location, style, check_bounds=True):
         node = Node(np.array(self.projection(location[0], location[1])), style)
-        if node.is_inbounds(self.bounds):
+        if check_bounds and node.is_inbounds(self.bounds):
             self.nodes.append(node)
 
-    def add_elevation(self, elevation_data, elevation_style):
+    def add_elevation(self, elevation_data, elevation_style, check_bounds=True):
         self.elevation = elevation_data
         self.elevation_style = elevation_style
 
