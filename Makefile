@@ -1,6 +1,3 @@
-all:
-	build
-
 build: setup.py
 	python setup.py sdist bdist_wheel
 
@@ -9,3 +6,6 @@ upload:
 
 clean:
 	rm dist/*
+
+all:
+	build

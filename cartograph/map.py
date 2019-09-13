@@ -1,9 +1,10 @@
 from os import mkdir
 from os.path import join
 import numpy as np
-import matplotlib as mpl
-from feature import Area, Way, Name, Node, Elevation
-from projection import mercator, deg2num, num2deg
+from matplotlib.figure import Figure
+from matplotlib.transforms import Bbox
+from .feature import Area, Way, Name, Node, Elevation
+from .projection import mercator, deg2num, num2deg
 
 class Map():
     def __init__(self):
@@ -31,7 +32,7 @@ class Map():
         min_lat = 85.0511
         max_lat = -85.0511
         min_lon = 180.0
-        max_lon = 180.0
+        max_lon = -180.0
         for lat, lon in args:
             min_lat = min(min_lat, lat)
             max_lat = max(max_lat, lat)
@@ -41,7 +42,8 @@ class Map():
         max_x, max_y = deg2num(min_lat, max_lon, zoom)
         top, left = num2deg(min_x, min_y, zoom)
         bottom, right = num2deg(max_x+1, max_y+1, zoom)
-        self.bound_by_box(self, bottom, top, left, right)
+        self.bound_by_box(bottom, top, left, right)
+        return min_x, max_x, min_y, max_y
 
     def get_bounds(self, padding=0):
         bounds = np.copy(self.bounds)
@@ -75,7 +77,8 @@ class Map():
     def add_elevation(self, data, style):
         data[:,0], data[:,1] = self.projection(data[:,1], data[:,0])
         self.elevation = Elevation(data, style)
-        resolution = (self.latlon_bounds[0,0] - self.latlon_bounds[0,1])*100/0.02, (self.latlon_bounds[1,1] - self.latlon_bounds[1,0])*100/0.02)
+        resolution = np.array([self.latlon_bounds[0,0] - self.latlon_bounds[0,1], self.latlon_bounds[1,1] - self.latlon_bounds[1,0]])
+        resolution *= 100/0.02
         self.elevation.generate_elevation_grid(self.bounds, resolution)
 
     def set_background_color(self, background_color):
@@ -102,13 +105,20 @@ class Map():
             name.plot(self.axes)
             name.set_visible(False)
 
-    def draw_zoom_levels(self, min, max=None, directory='tiles/'):
+    def draw_zoom_levels(self, min, max=None, directory='tiles/', disp=False):
         if max is None:
             max = min + 1
 
-        self.figure = mpl.figure.Figure(figsize=(1, 1), frameon=False)
+        self.figure = Figure(figsize=(1, 1), frameon=False)
         self.axes = self.figure.add_axes([0.0, 0.0, 1.0, 1.0], frameon=False, facecolor=self.background_color)
         self.plot()
+
+        if disp:
+            x_start, y_start = deg2num(self.latlon_bounds[0,0], self.latlon_bounds[1,0], min)
+            x_stop, y_stop = deg2num(self.latlon_bounds[0,1], self.latlon_bounds[1,1], min)
+            n_base_tiles = (x_stop - x_start) * (y_stop - y_start)
+            n_tiles = n_base_tiles * (4**(max-min) - 1) / 3
+            tile_number = 1
 
         for zoom in range(min, max):
             if self.elevation is not None and zoom >= self.elevation.style.contour_appears_at:
@@ -134,10 +144,16 @@ class Map():
             x_stop, y_stop = deg2num(self.latlon_bounds[0,1], self.latlon_bounds[1,1], zoom)
             for x in range(x_start, x_stop):
                 for y in range(y_start, y_stop):
+                    if disp:
+                        print('Drawing tiles...(%d/%d)' % (tile_number, n_tiles), end='\r')
+                        tile_number += 1
                     self.draw_tile(x, y, zoom, directory)
 
-            if self.elevation is not None and zoom >= self.elevation_style.contour_appears_at:
+            if self.elevation is not None and zoom >= self.elevation.style.contour_appears_at:
                 self.elevation.remove_contours()
+
+        if disp:
+            print()
 
     def draw_tile(self, x, y, zoom, directory='tiles'):
         lat0, lon0 = num2deg(x, y, zoom)
@@ -145,8 +161,8 @@ class Map():
         x0, y0 = self.projection(lat1, lon0)
         x1, y1 = self.projection(lat0, lon1)
 
-        self.axes.xlim(x0, x1)
-        self.axes.ylim(y0, y1)
+        self.axes.set_xlim(x0, x1)
+        self.axes.set_ylim(y0, y1)
 
         path = join(directory, '%d' % zoom)
         try:
@@ -161,12 +177,15 @@ class Map():
             pass
 
         path = join(path, '%d.png.tile' % y)
-        bbox = mpl.transforms.Bbox(np.array([[0,0], [1,1]]))
+        bbox = Bbox(np.array([[0,0], [1,1]]))
         self.figure.savefig(path, format='png', dpi=256, bbox_inches=bbox)
 
     def draw_image(self, path='map.png', dpi=1024):
+        if disp:
+            print('Drawing map image...')
+
         width = (self.bounds[0,1] - self.bounds[0,0]) / (self.bounds[1,1] - self.bounds[1,0])
-        self.figure = mpl.figure.Figure(figsize=(width, 1), frameon=False)
+        self.figure = Figure(figsize=(width, 1), frameon=False)
         self.axes = self.figure.add_axes([0.0, 0.0, 1.0, 1.0], frameon=False, facecolor=self.background_color)
         self.plot()
 
@@ -185,8 +204,8 @@ class Map():
         for name in self.names:
             name.set_visible(True)
 
-        self.axes.xlim(self.bounds[0,0], self.bounds[0,1])
-        self.axes.ylim(self.bounds[1,0], self.bounds[1,1])
+        self.axes.set_xlim(self.bounds[0,0], self.bounds[0,1])
+        self.axes.set_ylim(self.bounds[1,0], self.bounds[1,1])
 
-        bbox = mpl.transforms.Bbox(np.array([[0,0], [1,1]]))
+        bbox = Bbox(np.array([[0,0], [1,1]]))
         self.figure.savefig(path, dpi=dpi, bbox_inches=bbox)

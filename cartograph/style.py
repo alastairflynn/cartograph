@@ -1,3 +1,5 @@
+import numpy as np
+
 class Style():
     def __init__(self, appears_at=0):
         self.appears_at = appears_at
@@ -34,7 +36,7 @@ class NodeStyle(NameStyle):
         self.text = text
 
 class ElevationStyle():
-    def __init__(self, colormap='gist_terrain', vmin=-3000, vmax=4700, colormap_alpha=0.4, hillshade_alpha=0.25, contour_appears_at=15, contour_levels=np.linspace(0,5000,100,endpoint=False), contour_color='black', contour_width=0.2, clabel_levelskip=2, clabel_fontsize=5):
+    def __init__(self, colormap='terrain', vmin=-3000, vmax=4700, colormap_alpha=0.4, hillshade_alpha=0.25, contour_appears_at=15, contour_levels=np.linspace(0,5000,100,endpoint=False), contour_color='black', contour_width=0.2, clabel_levelskip=2, clabel_fontsize=5):
         self.colormap = colormap
         self.vmin = vmin
         self.vmax = vmax
