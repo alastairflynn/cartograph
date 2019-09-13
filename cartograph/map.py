@@ -7,6 +7,9 @@ from .feature import Area, Way, Name, Node, Elevation
 from .projection import mercator, deg2num, num2deg
 
 class Map():
+    '''
+    Class for collecting all the elements of a map with methods for drawing map tiles.
+    '''
     def __init__(self):
         self.areas = []
         self.ways = []
@@ -24,11 +27,17 @@ class Map():
         self.axes = None
 
     def bound_by_box(self, bottom, top, left, right):
+        '''
+        Set the bounds of the map, given as latitude and longitude bounds.
+        '''
         self.bounds[:,0] = self.projection(bottom, left)
         self.bounds[:,1] = self.projection(top, right)
         self.latlon_bounds = np.array([[top, bottom], [left, right]])
 
     def bound_by_osm_tiles(self, zoom, *args):
+        '''
+        Calculate the bounds corresponding to the minimal rectangle of tiles of `zoom level <https://wiki.openstreetmap.org/wiki/Zoom_levels>`_ *zoom* that includes one or more points, given by pairs of (lat,lon) coordinates.
+        '''
         min_lat = 85.0511
         max_lat = -85.0511
         min_lon = 180.0
@@ -46,35 +55,65 @@ class Map():
         return min_x, max_x, min_y, max_y
 
     def get_bounds(self, padding=0):
+        '''
+        Returns the map bounds in projected coordinates with optional padding.
+        '''
         bounds = np.copy(self.bounds)
         bounds[:,0] -= padding
         bounds[:,1] += padding
         return bounds
 
+    def get_latlon_bounds(self, padding=0):
+        '''
+        Returns the map bounds in lat/lon coordinates with optional padding.
+        '''
+        latlon_bounds = np.array([self.latlon_bounds[0,1], self.latlon_bounds[0,0]], [self.latlon_bounds[1,0], self.latlon_bounds[1,1]])
+        latlon_bounds[:,0] -= padding
+        latlon_bounds[:,1] += padding
+        return latlon_bounds
+
     def projection(self, lat, lon):
+        '''
+        The projection from lat/lon coordinates to cartesian coordinates. By default, this is the `Mercator projection <https://en.wikipedia.org/wiki/Mercator_projection>`_. Override this method to change the projection.
+        '''
         return mercator(lat, lon)
 
     def add_area(self, boundary, style, check_bounds=True):
+        '''
+        Add an area feature to the map with (2,N) numpy array *boundary* and :class:`cartograph.style.AreaStyle` *style*. Optionally check that at least one vertex of the boundary is within the bounds of the map (default True).
+        '''
         area = Area(np.array(self.projection(boundary[0], boundary[1])), style)
         if check_bounds and area.is_inbounds(self.bounds):
             self.areas.append(area)
 
     def add_way(self, vertices, style, check_bounds=True):
+        '''
+        Add a way feature to the map with (2,N) numpy array *vertices* and :class:`cartograph.style.WayStyle` *style*. Optionally check that at least one vertex of the way is within the bounds of the map (default True).
+        '''
         way = Way(np.array(self.projection(vertices[0], vertices[1])), style)
         if check_bounds and way.is_inbounds(self.bounds):
             self.ways.append(way)
 
     def add_name(self, label, location, style, check_bounds=True):
+        '''
+        Add a name feature to the map with string *label*, (2,) numpy array *location* and :class:`cartograph.style.NameStyle` *style*. Optionally check that the location is within the bounds of the map (default True). Currently this check always returns True.
+        '''
         name = Name(label, np.array(self.projection(location[0], location[1])), style)
         if check_bounds and name.is_inbounds(self.bounds):
             self.names.append(name)
 
     def add_node(self, location, style, check_bounds=True):
+        '''
+        Add a node feature to the map with (2,) numpy array *location* and :class:`cartograph.style.NodeStyle` *style*. Optionally check that the location is within the bounds of the map (default True). Currently this check always returns True.
+        '''
         node = Node(np.array(self.projection(location[0], location[1])), style)
         if check_bounds and node.is_inbounds(self.bounds):
             self.nodes.append(node)
 
     def add_elevation(self, data, style):
+        '''
+        Add elevation data to the map with :class:`cartograph.style.ElevationStyle` *style*. The data is expected to be an (N,3) numpy array where each row gives a latitude (in degrees), longitude (in degrees) and elevation (can be in any units).
+        '''
         data[:,0], data[:,1] = self.projection(data[:,1], data[:,0])
         self.elevation = Elevation(data, style)
         resolution = np.array([self.latlon_bounds[0,0] - self.latlon_bounds[0,1], self.latlon_bounds[1,1] - self.latlon_bounds[1,0]])
@@ -82,9 +121,26 @@ class Map():
         self.elevation.generate_elevation_grid(self.bounds, resolution)
 
     def set_background_color(self, background_color):
+        '''
+        Set the background colour of the map.
+
+        See also :meth:`cartograph.feature.Elevation.draw_background_image`.
+        '''
         self.background_color = background_color
 
+    def create_figure(self, width, height):
+        '''
+        Create a figure to draw the map onto.
+        '''
+        self.figure = Figure(figsize=(width, height), frameon=False)
+        self.axes = self.figure.add_axes([0.0, 0.0, 1.0, 1.0], frameon=False, facecolor=self.background_color)
+
     def plot(self):
+        '''
+        Plot the map features. This method does not create the figure, :meth:`create_figure` must be called first.
+
+        See also :meth:`draw_zoom_levels` and :meth:`draw_image`.
+        '''
         if self.elevation is not None:
             self.elevation.draw_background_image(self.axes)
             self.elevation.draw_hillshade(self.axes)
@@ -105,12 +161,14 @@ class Map():
             name.plot(self.axes)
             name.set_visible(False)
 
-    def draw_zoom_levels(self, min, max=None, directory='tiles/', disp=False):
+    def draw_zoom_levels(self, min, max=None, directory='tiles', disp=False):
+        '''
+        Draw all the tiles from `zoom level <https://wiki.openstreetmap.org/wiki/Zoom_levels>`_ *min* (inclusive) to *max* (not inclusve). If *max* is not given, draws the tiles for `zoom level <https://wiki.openstreetmap.org/wiki/Zoom_levels>`_ *min* only. The tiles are saved using `slippy map tilenames <https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames>`_ within the parent directory *directory*. Optionally display progress (default False).
+        '''
         if max is None:
             max = min + 1
 
-        self.figure = Figure(figsize=(1, 1), frameon=False)
-        self.axes = self.figure.add_axes([0.0, 0.0, 1.0, 1.0], frameon=False, facecolor=self.background_color)
+        self.create_figure(1, 1)
         self.plot()
 
         if disp:
@@ -156,6 +214,9 @@ class Map():
             print()
 
     def draw_tile(self, x, y, zoom, directory='tiles'):
+        '''
+        Draw an individual map tile given by *x*, *y* and *zoom* (see `slippy map tilenames <https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames>`_). The tiles are saved using `slippy map tilenames <https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames>`_ within the parent directory *directory*.
+        '''
         lat0, lon0 = num2deg(x, y, zoom)
         lat1, lon1 = num2deg(x+1, y+1, zoom)
         x0, y0 = self.projection(lat1, lon0)
@@ -180,13 +241,15 @@ class Map():
         bbox = Bbox(np.array([[0,0], [1,1]]))
         self.figure.savefig(path, format='png', dpi=256, bbox_inches=bbox)
 
-    def draw_image(self, path='map.png', dpi=1024):
+    def draw_image(self, filename='map.png', height=1024):
+        '''
+        Draw the map and save it as a single image with *height* in pixels (the width is calculated from the map bounds). The image format is determined from the *filename*. 
+        '''
         if disp:
             print('Drawing map image...')
 
         width = (self.bounds[0,1] - self.bounds[0,0]) / (self.bounds[1,1] - self.bounds[1,0])
-        self.figure = Figure(figsize=(width, 1), frameon=False)
-        self.axes = self.figure.add_axes([0.0, 0.0, 1.0, 1.0], frameon=False, facecolor=self.background_color)
+        self.create_figure(width, 1)
         self.plot()
 
         if self.elevation is not None:
@@ -208,4 +271,4 @@ class Map():
         self.axes.set_ylim(self.bounds[1,0], self.bounds[1,1])
 
         bbox = Bbox(np.array([[0,0], [1,1]]))
-        self.figure.savefig(path, dpi=dpi, bbox_inches=bbox)
+        self.figure.savefig(filename, dpi=height, bbox_inches=bbox)
