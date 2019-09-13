@@ -2,7 +2,7 @@ from os import mkdir
 from os.path import join
 import numpy as np
 import matplotlib as mpl
-from feature import Area, Way, Name, Node
+from feature import Area, Way, Name, Node, Elevation
 from projection import mercator, deg2num, num2deg
 
 class Map():
@@ -11,17 +11,14 @@ class Map():
         self.ways = []
         self.names = []
         self.nodes = []
+        self.elevation = None
 
         self.bounds = np.zeros((2,2))
         self.bounds[:,0] = self.projection(-85.0511, -180.0)
         self.bounds[:,1] = self.projection(85.0511, 180.0)
         self.latlon_bounds = np.array([[85.0511, -85.0511], [-180.0, 180.0]])
 
-        self.elevation = None
-        self.elevation_style = None
-
         self.background_color = 'white'
-
         self.figure = None
         self.axes = None
 
@@ -75,21 +72,19 @@ class Map():
         if check_bounds and node.is_inbounds(self.bounds):
             self.nodes.append(node)
 
-    def add_elevation(self, elevation_data, elevation_style, check_bounds=True):
-        self.elevation = elevation_data
-        self.elevation_style = elevation_style
+    def add_elevation(self, data, style):
+        data[:,0], data[:,1] = self.projection(data[:,1], data[:,0])
+        self.elevation = Elevation(data, style)
+        resolution = (self.latlon_bounds[0,0] - self.latlon_bounds[0,1])*100/0.02, (self.latlon_bounds[1,1] - self.latlon_bounds[1,0])*100/0.02)
+        self.elevation.generate_elevation_grid(self.bounds, resolution)
 
     def set_background_color(self, background_color):
         self.background_color = background_color
 
     def plot(self):
         if self.elevation is not None:
-            ls = mpl.colors.LightSource(azdeg=30, altdeg=60)
-            shade = ls.hillshade(elevation[2], vert_exag=1, fraction=1.0).T
-
-            im_extent = [self.elevation[0][0,0], self.elevation[0][-1,0], self.elevation[1][0,0], self.elevation[1][0,-1]]
-            self.axes.imshow(elevation[2].T, origin='lower', extent=im_extent, interpolation='bilinear', cmap=self.elevation_style.colormap, vmin=self.elevation_style.vmin, vmax=self.elevation_style.vmax, alpha=self.elevation_style.colormap_alpha)
-            self.axes.imshow(shade, origin='lower', extent=im_extent, interpolation='bilinear', cmap='gray', alpha=self.elevation_style.hillshade_alpha)
+            self.elevation.draw_background_image(self.axes)
+            self.elevation.draw_hillshade(self.axes)
 
         for area in self.areas:
             area.plot(self.axes)
@@ -107,7 +102,7 @@ class Map():
             name.plot(self.axes)
             name.set_visible(False)
 
-    def draw_zoom_levels(self, min, max=None):
+    def draw_zoom_levels(self, min, max=None, directory='tiles/'):
         if max is None:
             max = min + 1
 
@@ -116,9 +111,8 @@ class Map():
         self.plot()
 
         for zoom in range(min, max):
-            if self.elevation is not None and zoom >= self.elevation_style.contour_appears_at:
-                contours = self.axes.contour(elevation[0], elevation[1], elevation[2], levels=self.elevation_style.contour_levels, colors=self.elevation_style.contour_color, linewidths=self.elevation_style.contour_width)
-                labels = self.axes.clabel(contours, self.elevation_style.clabel_levels, inline=1, inline_spacing=0.0, fontsize=self.elevation_style.clabel_fontsize, fmt='%0.0f', use_clabeltext=False)
+            if self.elevation is not None and zoom >= self.elevation.style.contour_appears_at:
+                self.elevation.plot_contours(self.axes)
 
             for area in self.areas:
                 if zoom >= area.style.appears_at:
@@ -140,13 +134,10 @@ class Map():
             x_stop, y_stop = deg2num(self.latlon_bounds[0,1], self.latlon_bounds[1,1], zoom)
             for x in range(x_start, x_stop):
                 for y in range(y_start, y_stop):
-                    self.draw_tile(x, y, zoom)
+                    self.draw_tile(x, y, zoom, directory)
 
             if self.elevation is not None and zoom >= self.elevation_style.contour_appears_at:
-                for c in contours.collections:
-                    c.remove()
-                for l in labels:
-                    l.remove()
+                self.elevation.remove_contours()
 
     def draw_tile(self, x, y, zoom, directory='tiles'):
         lat0, lon0 = num2deg(x, y, zoom)
@@ -179,8 +170,8 @@ class Map():
         self.axes = self.figure.add_axes([0.0, 0.0, 1.0, 1.0], frameon=False, facecolor=self.background_color)
         self.plot()
 
-        contours = self.axes.contour(elevation[0], elevation[1], elevation[2], levels=self.elevation_style.contour_levels, colors=self.elevation_style.contour_color, linewidths=self.elevation_style.contour_width)
-        labels = self.axes.clabel(contours, self.elevation_style.clabel_levels, inline=1, inline_spacing=0.0, fontsize=self.elevation_style.clabel_fontsize, fmt='%0.0f', use_clabeltext=False)
+        if self.elevation is not None:
+            self.elevation.plot_contours(self.axes)
 
         for area in self.areas:
             area.set_visible(True)
