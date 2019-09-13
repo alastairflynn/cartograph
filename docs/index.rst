@@ -3,14 +3,30 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to cartograph's documentation!
-======================================
+Introduction
+=====================================
+
+Installation
+============
+
+Cartograph can be installed using pip
+
+::
+
+  pip install cartograph
+
+Basic Usage
+===========
+
+Reference
+=========
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
 
-
+   map
+   feature
+   style
 
 Indices and tables
 ==================
@@ -18,24 +34,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
-
-.. automodule:: cartograph
-  :members:
-  :undoc-members:
-  :inherited-members:
-
-.. automodule:: cartograph.map
-  :members:
-  :undoc-members:
-  :inherited-members:
-
-.. automodule:: cartograph.feature
-  :members:
-  :undoc-members:
-  :inherited-members:
-
-.. automodule:: cartograph.style
-  :members:
-  :undoc-members:
-  :inherited-members:

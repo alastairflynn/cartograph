@@ -112,7 +112,7 @@ class Map():
 
     def add_elevation(self, data, style):
         '''
-        Add elevation data to the map with :class:`cartograph.style.ElevationStyle` *style*. The data is expected to be an (N,3) numpy array where each row gives a latitude (in degrees), longitude (in degrees) and elevation (can be in any units).
+        Add elevation data to the map with :class:`cartograph.style.ElevationStyle` *style*. The *data* is expected to be an (N,3) numpy array where each row gives a latitude (in degrees), longitude (in degrees) and elevation (can be in any units).
         '''
         data[:,0], data[:,1] = self.projection(data[:,1], data[:,0])
         self.elevation = Elevation(data, style)
@@ -243,11 +243,8 @@ class Map():
 
     def draw_image(self, filename='map.png', height=1024):
         '''
-        Draw the map and save it as a single image with *height* in pixels (the width is calculated from the map bounds). The image format is determined from the *filename*. 
+        Draw the map and save it as a single image with *height* in pixels (the width is calculated from the map bounds). The image format is determined from the *filename*.
         '''
-        if disp:
-            print('Drawing map image...')
-
         width = (self.bounds[0,1] - self.bounds[0,0]) / (self.bounds[1,1] - self.bounds[1,0])
         self.create_figure(width, 1)
         self.plot()
