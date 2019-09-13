@@ -1,1 +1,1 @@
-name = 'cartograph'
+from .map import Map
