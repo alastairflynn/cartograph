@@ -5,6 +5,7 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.transforms import Bbox
 from .feature import Area, Way, Name, Node, Elevation
+from .style import AreaStyle
 from .projection import mercator, deg2num, num2deg
 
 class Map():
@@ -23,9 +24,9 @@ class Map():
         self.bounds[:,1] = self.projection(85.0511, 180.0)
         self.latlon_bounds = np.array([[85.0511, -85.0511], [-180.0, 180.0]])
 
-        self.background_color = 'white'
         self.figure = None
         self.axes = None
+        self.background = None
 
     def bound_by_box(self, bottom, top, left, right):
         '''
@@ -89,7 +90,9 @@ class Map():
 
     def add_area(self, boundary, style, check_bounds=True):
         '''
-        Add an area feature to the map with (2,N) numpy array *boundary* and :class:`cartograph.style.AreaStyle` *style*. Optionally check that at least one vertex of the boundary is within the bounds of the map (default True).
+        Add an area feature to the map with (2,N) numpy array *boundary* and :class:`.AreaStyle` *style*. Each column of *boundary* is a lat/lon coordinate. Optionally check that at least one vertex of the boundary is within the bounds of the map (default True).
+
+        See also :class:`.AreaFeature`
         '''
         area = Area(np.array(self.projection(boundary[0], boundary[1])), style)
         if check_bounds and area.is_inbounds(self.bounds):
@@ -97,7 +100,9 @@ class Map():
 
     def add_way(self, vertices, style, check_bounds=True):
         '''
-        Add a way feature to the map with (2,N) numpy array *vertices* and :class:`cartograph.style.WayStyle` *style*. Optionally check that at least one vertex of the way is within the bounds of the map (default True).
+        Add a way feature to the map with (2,N) numpy array *vertices* and :class:`.WayStyle` *style*. Each column of *vertices* is a lat/lon coordinate. Optionally check that at least one vertex of the way is within the bounds of the map (default True).
+
+        See also :class:`.WayFeature`
         '''
         way = Way(np.array(self.projection(vertices[0], vertices[1])), style)
         if check_bounds and way.is_inbounds(self.bounds):
@@ -105,7 +110,9 @@ class Map():
 
     def add_name(self, label, location, style, check_bounds=True):
         '''
-        Add a name feature to the map with string *label*, (2,) numpy array *location* and :class:`cartograph.style.NameStyle` *style*. Optionally check that the location is within the bounds of the map (default True). Currently this check always returns True.
+        Add a name feature to the map with string *label*, (2,) numpy array *location* and :class:`.NameStyle` *style*. Optionally check that the location is within the bounds of the map (default True). Currently this check always returns True.
+
+        See also :class:`.NameFeature`
         '''
         name = Name(label, np.array(self.projection(location[0], location[1])), style)
         if check_bounds and name.is_inbounds(self.bounds):
@@ -113,7 +120,9 @@ class Map():
 
     def add_node(self, location, style, check_bounds=True):
         '''
-        Add a node feature to the map with (2,) numpy array *location* and :class:`cartograph.style.NodeStyle` *style*. Optionally check that the location is within the bounds of the map (default True). Currently this check always returns True.
+        Add a node feature to the map with (2,) numpy array *location* and :class:`.NodeStyle` *style*. Optionally check that the location is within the bounds of the map (default True). Currently this check always returns True.
+
+        See also :class:`.NodeFeature`
         '''
         node = Node(np.array(self.projection(location[0], location[1])), style)
         if check_bounds and node.is_inbounds(self.bounds):
@@ -121,7 +130,9 @@ class Map():
 
     def add_elevation(self, data, style):
         '''
-        Add elevation data to the map with :class:`cartograph.style.ElevationStyle` *style*. The *data* is expected to be an (N,3) numpy array where each row gives a latitude (in degrees), longitude (in degrees) and elevation (can be in any units).
+        Add elevation data to the map with :class:`.ElevationStyle` *style*. The *data* is expected to be an (N,3) numpy array where each row gives a latitude (in degrees), longitude (in degrees) and elevation (can be in any units).
+
+        See also :class:`.ElevationFeature`
         '''
         data[:,0], data[:,1] = self.projection(data[:,1], data[:,0])
         self.elevation = Elevation(data, style)
@@ -133,9 +144,12 @@ class Map():
         '''
         Set the background colour of the map.
 
-        See also :meth:`cartograph.feature.Elevation.draw_background_image`.
+        See also :meth:`.Elevation.draw_background_image`.
         '''
-        self.background_color = background_color
+        if self.background is not None:
+            self.background.remove()
+        boundary = np.array([[self.bounds[0,0], self.bounds[0,1], self.bounds[0,1], self.bounds[0,0]], [self.bounds[1,0], self.bounds[1,0], self.bounds[1,1], self.bounds[1,1]]])
+        self.background = Area(boundary, AreaStyle(color=background_color))
 
     def create_figure(self, width, height):
         '''
@@ -143,7 +157,7 @@ class Map():
         '''
         self.figure = Figure(figsize=(width, height), frameon=False)
         self.canvas = FigureCanvasAgg(self.figure)
-        self.axes = self.figure.add_axes([0.0, 0.0, 1.0, 1.0], frameon=False, facecolor=self.background_color)
+        self.axes = self.figure.add_axes([0.0, 0.0, 1.0, 1.0], frameon=False)
 
     def plot(self):
         '''
@@ -151,6 +165,9 @@ class Map():
 
         See also :meth:`draw_zoom_levels` and :meth:`draw_image`.
         '''
+        if self.background is not None:
+            self.background.plot(self.axes)
+
         if self.elevation is not None:
             self.elevation.draw_background_image(self.axes)
             self.elevation.draw_hillshade(self.axes)

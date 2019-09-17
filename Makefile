@@ -9,6 +9,10 @@ upload:
 docs:
 	cd ./docs && $(MAKE) html
 
+.PHONY: test
+test:
+	cd ./tests && python test_basic.py
+
 .PHONY: clean
 clean:
 	rm dist/*

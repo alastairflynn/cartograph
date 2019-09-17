@@ -18,16 +18,23 @@ class Feature():
 
     def set_visible(self, visible):
         '''
-        Make the feature visible or not (after it has been plotted)
+        Make the feature visible or not (after it has been plotted).
         '''
         for artist in self.artists:
             artist.set_visible(visible)
+
+    def remove(self):
+        '''
+        Remove the feature from the plot.
+        '''
+        for artist in self.artists:
+            artist.remove()
 
 class Area(Feature):
     '''
     Subclass of :class:`Feature`
 
-    Area feature defined by *boundary* with :class:`cartograph.style.AreaStyle` *style*.
+    Area feature with (2,N) numpy array *boundary* and :class:`.AreaStyle` *style*. To add an :class:`Area` to a :class:`.Map` one would typically use :meth:`.add_area`.
     '''
     def __init__(self, boundary, style):
         super().__init__(style)
@@ -52,7 +59,7 @@ class Way(Feature):
     '''
     Subclass of :class:`Feature`
 
-    Way feature defined by *vertices* with :class:`cartograph.style.WayStyle` *style*.
+    Way feature with (2,N) numpy array *vertices* and :class:`.WayStyle` *style*. To add a :class:`Way` to a :class:`.Map` one would typically use :meth:`.add_way`.
     '''
     def __init__(self, vertices, style):
         super().__init__(style)
@@ -77,7 +84,7 @@ class Name(Feature):
     '''
     Subclass of :class:`Feature`
 
-    Name feature defined by *name* and *location* with :class:`cartograph.style.NameStyle` *style*.
+    Name feature with *name*, (2,) numpy array *location* and :class:`.NameStyle` *style*. To add a :class:`Name` to a :class:`.Map` one would typically use :meth:`.add_name`.
     '''
     def __init__(self, name, location, style):
         super().__init__(style)
@@ -101,7 +108,7 @@ class Node(Name):
     '''
     Subclass of :class:`Name`
 
-    Node feature defined by *location* with :class:`cartograph.style.NodeStyle` *style*.
+    Node feature with (2,) numpy array *location* and :class:`.NodeStyle` *style*. To add a :class:`Node` to a :class:`.Map` one would typically use :meth:`.add_node`.
     '''
     def __init__(self, location, style):
         super().__init__(style.text, location, style)
@@ -110,7 +117,7 @@ class Elevation(Feature):
     '''
     Subclass of :class:`Feature`
 
-    Elevation feature with :class:`cartograph.style.ElevationStyle` *style*. The *data* is expected to be an (N,3) numpy array where each row gives an x-coordinate, y-coordinate and elevation.
+    Elevation feature with :class:`.ElevationStyle` *style*. The *data* is expected to be an (N,3) numpy array where each row gives an x-coordinate, y-coordinate and elevation.
     '''
     def __init__(self, data, style):
         super().__init__(style)
