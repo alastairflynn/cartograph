@@ -5,9 +5,9 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="cartograph-alastairflynn",
-    version="1.0.0",
+    version="0.0.0",
     author="Alastair Flynn",
-    author_email="alastairflynn1@gmail.com",
+    author_email="contact@alastairflynn.com",
     description="A package for drawing map tiles",
     long_description=long_description,
     long_description_content_type="text/markdown",

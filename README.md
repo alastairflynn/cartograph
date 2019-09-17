@@ -40,7 +40,7 @@ map.draw_image('map.png')
 
 This should create an image called 'map.png' like the one below
 
-![](docs/map.png)
+<img src="docs/map.png" style="width:50%; display:block; margin-left: auto; margin-right: auto;"/>
 
 ## Tutorial
 

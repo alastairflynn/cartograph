@@ -54,6 +54,8 @@ The following script is a minimal demonstration of how to create a map, add some
 This should create an image called "map.png" like the one below
 
 .. image:: map.png
+  :width: 50%
+  :align: center
 
 Tutorial
 ========
