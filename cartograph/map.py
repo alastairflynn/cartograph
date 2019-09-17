@@ -2,6 +2,7 @@ from os import mkdir
 from os.path import join
 import numpy as np
 from matplotlib.figure import Figure
+from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.transforms import Bbox
 from .feature import Area, Way, Name, Node, Elevation
 from .projection import mercator, deg2num, num2deg
@@ -67,10 +68,18 @@ class Map():
         '''
         Returns the map bounds in lat/lon coordinates with optional padding.
         '''
-        latlon_bounds = np.array([self.latlon_bounds[0,1], self.latlon_bounds[0,0]], [self.latlon_bounds[1,0], self.latlon_bounds[1,1]])
+        latlon_bounds = np.array([[self.latlon_bounds[0,1], self.latlon_bounds[0,0]], [self.latlon_bounds[1,0], self.latlon_bounds[1,1]]])
         latlon_bounds[:,0] -= padding
         latlon_bounds[:,1] += padding
         return latlon_bounds
+
+    def number_of_tiles(self, zoom):
+        '''
+        Returns the (minimal) number of tiles of `zoom level <https://wiki.openstreetmap.org/wiki/Zoom_levels>`_ *zoom* that cover the map.
+        '''
+        x_start, y_start = deg2num(self.latlon_bounds[0,0], self.latlon_bounds[1,0], zoom)
+        x_stop, y_stop = deg2num(self.latlon_bounds[0,1], self.latlon_bounds[1,1], zoom)
+        return (x_stop - x_start) * (y_stop - y_start)
 
     def projection(self, lat, lon):
         '''
@@ -133,6 +142,7 @@ class Map():
         Create a figure to draw the map onto.
         '''
         self.figure = Figure(figsize=(width, height), frameon=False)
+        self.canvas = FigureCanvasAgg(self.figure)
         self.axes = self.figure.add_axes([0.0, 0.0, 1.0, 1.0], frameon=False, facecolor=self.background_color)
 
     def plot(self):
@@ -172,9 +182,7 @@ class Map():
         self.plot()
 
         if disp:
-            x_start, y_start = deg2num(self.latlon_bounds[0,0], self.latlon_bounds[1,0], min)
-            x_stop, y_stop = deg2num(self.latlon_bounds[0,1], self.latlon_bounds[1,1], min)
-            n_base_tiles = (x_stop - x_start) * (y_stop - y_start)
+            n_base_tiles = self.number_of_tiles(min)
             n_tiles = n_base_tiles * (4**(max-min) - 1) / 3
             tile_number = 1
 

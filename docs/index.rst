@@ -15,18 +15,20 @@ Cartograph can be installed using pip
 
   pip install cartograph
 
-Basic Usage
-===========
-
 Reference
 =========
 
 .. toctree::
-   :maxdepth: 2
+  map
+  feature
+  style
+  projection
 
-   map
-   feature
-   style
+Basic Usage
+===========
+
+Tutorial
+========
 
 Indices and tables
 ==================

@@ -12,6 +12,7 @@
 #
 import os
 import sys
+import sphinx_rtd_theme
 sys.path.insert(0, os.path.abspath('..'))
 
 
@@ -27,7 +28,8 @@ author = 'Alastair Flynn'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc']
+extensions = ['sphinx.ext.autodoc', 'sphinx_rtd_theme']
+autodoc_member_order = 'bysource'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -43,7 +45,11 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'pyramid'
+html_theme = 'classic'
+html_theme_options = {'linkcolor':'#000099', 'visitedlinkcolor':'#000099', 'sidebarlinkcolor':'#000099', 'relbarlinkcolor':'#000099',
+'bgcolor':'#ffffff', 'footerbgcolor':'#dddddd', 'headbgcolor':'#ffffff', 'sidebarbgcolor':'#ffffff', 'relbarbgcolor':'#dddddd',
+'textcolor':'#121212', 'footertextcolor':'#121212', 'headtextcolor':'#121212', 'sidebartextcolor':'#121212', 'relbartextcolor':'#121212'}
+# 'codebgcolor':'#121212', 'codetextcolor':'#aaaaaa'}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
