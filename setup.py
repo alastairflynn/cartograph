@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="cartograph-alastairflynn",
-    version="0.0.1",
+    version="1.0.0",
     author="Alastair Flynn",
     author_email="alastairflynn1@gmail.com",
     description="A package for drawing map tiles",
@@ -18,5 +18,6 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.7',
+    python_requires='>=3.5',
+    install_requires=['numpy>=1.3.0', 'scipy>=0.9.0', 'matplotlib>=3.0.0']
 )
