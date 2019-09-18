@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="cartograph-alastairflynn",
+    name="cartograph",
     version="0.0.0",
     author="Alastair Flynn",
     author_email="contact@alastairflynn.com",

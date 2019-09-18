@@ -60,7 +60,7 @@ This should create an image called "map.png" like the one below
 Tutorial
 ========
 
-Coming soon.
+There is an extended `tutorial <https://alastairflynn.com/maps/>`_ to draw maps using OpenStreetMap data, including fetching and processing the data using other Python libraries.
 
 Indices and tables
 ==================
