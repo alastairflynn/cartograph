@@ -12,7 +12,7 @@ pip install cartograph
 
 ## Documentation
 
-Documentation is will be available online soon. It it also included in the [source](docs/_build/html).
+[Documentation](https://alastairflynn.com/cartograph) is available online. It it also included in the [source](docs/_build/html).
 
 ## Basic Usage
 

@@ -6,7 +6,7 @@
 Introduction
 =====================================
 
-Cartograph is a Python package for drawing OpenStreetMap compatible map tiles. The tiles it produces can be viewed as a `slippy map <https://wiki.openstreetmap.org/wiki/Slippy_Map>`_ or by various apps.
+Cartograph is a Python package for drawing OpenStreetMap compatible map tiles. The tiles it produces can be viewed as a `slippy map <https://wiki.openstreetmap.org/wiki/Slippy_Map>`_ or by various apps such as `Maverick <https://play.google.com/store/apps/details?id=com.codesector.maverick.lite&hl=en>`_.
 
 Installation
 ============
