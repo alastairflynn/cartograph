@@ -4,8 +4,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="cartograph-alastairflynn",
-    version="1.0.4",
+    name="cartograph",
+    version="0.0.0",
     author="Alastair Flynn",
     author_email="contact@alastairflynn.com",
     description="A package for drawing map tiles",
