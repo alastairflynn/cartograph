@@ -11,7 +11,9 @@ setuptools.setup(
     description="A package for drawing map tiles",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    # url="https://github.com/pypa/sampleproject",
+    url="https://github.com/alastairflynn/cartograph",
+    project_urls = {'Documentation':'https://alastairflynn.com/cartograph',
+                    'Source code':'https://github.com/alastairflynn/cartograph'},
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",

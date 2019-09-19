@@ -5,6 +5,10 @@ build: setup.py
 upload:
 	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 
+.PHONY: publish
+publish:
+	twine upload dist/*
+
 .PHONY: docs
 docs:
 	cd ./docs && $(MAKE) html
@@ -12,7 +16,6 @@ docs:
 .PHONY: test
 test:
 	cd ./test && python test_basic.py
-
 
 .PHONY: logo
 logo:

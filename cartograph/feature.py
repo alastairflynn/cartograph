@@ -134,9 +134,10 @@ class Elevation(Feature):
         mask0 = np.logical_and(bounds[0,0]-padding <= self.data[0], self.data[0] <= bounds[0,1]+padding)
         mask1 = np.logical_and(bounds[1,0]-padding <= self.data[1], self.data[1] <= bounds[1,1]+padding)
         mask = np.logical_and(mask0, mask1)
+        masked_data = self.data[:,mask]
 
         self.grid_x, self.grid_y = np.mgrid[bounds[0,0]:bounds[0,1]:resolution[0]*1j, bounds[1,0]:bounds[1,1]:resolution[1]*1j]
-        self.ele = griddata(self.data[:,mask][0:2].T, self.data[:,mask][2], (self.grid_x, self.grid_y), method='cubic')
+        self.ele = griddata(masked_data[0:2].T, masked_data[2], (self.grid_x, self.grid_y), method='cubic')
         self.im_extent = [self.grid_x[0,0], self.grid_x[-1,0], self.grid_y[0,0], self.grid_y[0,-1]]
 
     def draw_background_image(self, axes):
