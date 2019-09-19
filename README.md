@@ -12,9 +12,9 @@ pip install cartograph
 
 ## Documentation
 
-[Documentation](https://alastairflynn.com/cartograph) is available online. It it also included in the [source](docs/_build/html).
+[Documentation](https://alastairflynn.com/cartograph) is available online, including [basic usage](https://alastairflynn.com/cartograph/#basic-usage) and a more extended [tutorial](https://alastairflynn.com/maps).
 
-## Basic Usage
+<!-- ## Basic Usage
 
 The following script is a minimal demonstration of how to create a map, add some features to it and draw the map as a single image.
 
@@ -40,8 +40,8 @@ map.draw_image('map.png')
 
 This should create an image called 'map.png' like the one below
 
-<img src="docs/map.png" style="width:50%; display:block; margin-left: auto; margin-right: auto;"/>
+<img src="https://alastairflynn.com/cartograph/_images/map.png" style="width:50%; display:block; margin-left: auto; margin-right: auto;"/>
 
 ## Tutorial
 
-There is an extended [tutorial](https://alastairflynn.com/maps/) to draw maps using OpenStreetMap data, including fetching and processing the data using other Python libraries.
+There is an extended [tutorial](https://alastairflynn.com/maps/) to draw maps using OpenStreetMap data, including fetching and processing the data using other Python libraries. -->

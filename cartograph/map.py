@@ -130,11 +130,11 @@ class Map():
 
     def add_elevation(self, data, style):
         '''
-        Add elevation data to the map with :class:`.ElevationStyle` *style*. The *data* is expected to be an (N,3) numpy array where each row gives a latitude (in degrees), longitude (in degrees) and elevation (can be in any units).
+        Add elevation data to the map with :class:`.ElevationStyle` *style*. The *data* is expected to be an (3,N) numpy array where each row gives a latitude (in degrees), longitude (in degrees) and elevation (can be in any units).
 
         See also :class:`.Elevation`
         '''
-        data[:,0], data[:,1] = self.projection(data[:,1], data[:,0])
+        data[0], data[1] = self.projection(data[0], data[1])
         self.elevation = Elevation(data, style)
         resolution = np.array([self.latlon_bounds[0,0] - self.latlon_bounds[0,1], self.latlon_bounds[1,1] - self.latlon_bounds[1,0]])
         resolution *= 100/0.02
@@ -158,7 +158,8 @@ class Map():
         '''
         self.figure = Figure(figsize=(width, height), frameon=False)
         self.canvas = FigureCanvasAgg(self.figure)
-        self.axes = self.figure.add_axes([0.0, 0.0, 1.0, 1.0], frameon=False)
+        self.axes = self.figure.add_axes([0.0, 0.0, 1.0, 1.0])
+        self.axes.axis('off')
 
     def plot(self):
         '''

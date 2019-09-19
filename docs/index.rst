@@ -11,7 +11,7 @@ Cartograph is a Python package for drawing OpenStreetMap compatible map tiles. T
 Installation
 ============
 
-Cartograph can be installed using pip
+Cartograph can be installed using pip.
 
 ::
 
