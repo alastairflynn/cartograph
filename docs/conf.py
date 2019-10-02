@@ -12,7 +12,6 @@
 #
 import os
 import sys
-import sphinx_rtd_theme
 sys.path.insert(0, os.path.abspath('..'))
 
 
@@ -28,7 +27,7 @@ author = 'Alastair Flynn'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx_rtd_theme']
+extensions = ['sphinx.ext.autodoc']
 autodoc_member_order = 'bysource'
 
 # Add any paths that contain templates here, relative to this directory.
