@@ -5,13 +5,13 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="cartograph",
-    version="0.0.0",
+    version="0.0.1",
     author="Alastair Flynn",
     author_email="contact@alastairflynn.com",
     description="A package for drawing map tiles",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/alastairflynn/cartograph",
+    url="https://alastairflynn.com/cartograph",
     project_urls = {'Documentation':'https://alastairflynn.com/cartograph',
                     'Source code':'https://github.com/alastairflynn/cartograph'},
     packages=setuptools.find_packages(),
