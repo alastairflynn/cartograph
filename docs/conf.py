@@ -44,10 +44,17 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
+linkcolor = '#000099'
+textcolor = 'black'
+bgcolor = '#eeeeee'
+barbgcolor = '#000099'
+barcolor = 'white'
+
 html_theme = 'classic'
-html_theme_options = {'linkcolor':'#000099', 'visitedlinkcolor':'#000099', 'sidebarlinkcolor':'#000099', 'relbarlinkcolor':'#000099',
-'bgcolor':'#ffffff', 'footerbgcolor':'#dddddd', 'headbgcolor':'#ffffff', 'sidebarbgcolor':'#ffffff', 'relbarbgcolor':'#dddddd',
-'textcolor':'#121212', 'footertextcolor':'#121212', 'headtextcolor':'#121212', 'sidebartextcolor':'#121212', 'relbartextcolor':'#121212'}
+html_theme_options = {'linkcolor':linkcolor, 'visitedlinkcolor':linkcolor, 'sidebarlinkcolor':linkcolor, 'relbarlinkcolor':barcolor,
+'bgcolor':bgcolor, 'footerbgcolor':barbgcolor, 'headbgcolor':bgcolor, 'sidebarbgcolor':bgcolor, 'relbarbgcolor':barbgcolor,
+'textcolor':textcolor, 'footertextcolor':barcolor, 'headtextcolor':textcolor, 'sidebartextcolor':textcolor, 'relbartextcolor':barcolor,
+'stickysidebar':True}
 # 'codebgcolor':'#121212', 'codetextcolor':'#aaaaaa'}
 
 html_logo = 'logo.png'
