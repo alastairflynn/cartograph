@@ -63,11 +63,9 @@ class NodeStyle(NameStyle):
 
 class ElevationStyle():
     '''
-    Subclass of :class:`Style`.
-
     Elevation style which determines the colormap of the background image, the elevation limits *vmin* and *vmax* of the colormap, the opacity *colormap_alpha* of the background image, the opacity *hillshade_alpha* of the hillshade, a list or numpy array of `zoom levels <https://wiki.openstreetmap.org/wiki/Zoom_levels>`_ at which contours appear, the contour levels, the contour colour, the linewidth of the contours, the levels at which contours are labelled (by default, labelled at every other level) and the fontsize of the contour labels.
 
-    When using the "terrain" colormap (the default), low values are drawn in blue so it may be usefult to set *vmin* to be below sea level.
+    When using the "terrain" colormap (the default), low values are drawn in blue so it may be useful to set *vmin* to be below sea level.
     '''
     def __init__(self, colormap='terrain', vmin=-3000, vmax=5000, colormap_alpha=0.4, hillshade_alpha=0.25, contour_appears_at=15, contour_levels=[], contour_color='black', contour_width=0.2, clabel_levelskip=2, clabel_fontsize=5):
         self.colormap = colormap

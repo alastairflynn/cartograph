@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'Cartograph'
-copyright = '2019, Alastair Flynn'
+copyright = '2021, Alastair Flynn'
 author = 'Alastair Flynn'
 
 
@@ -44,11 +44,11 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-linkcolor = '#000099'
+linkcolor = '#075e0e'
 textcolor = 'black'
-bgcolor = '#eeeeee'
-barbgcolor = '#000099'
-barcolor = 'white'
+bgcolor = 'white'
+barbgcolor = 'white'
+barcolor = '#075e0e'
 
 html_theme = 'classic'
 html_theme_options = {'linkcolor':linkcolor, 'visitedlinkcolor':linkcolor, 'sidebarlinkcolor':linkcolor, 'relbarlinkcolor':barcolor,
